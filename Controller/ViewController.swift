@@ -16,6 +16,7 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     let currencyArray = ["AUD", "BRL","CAD","CNY","EUR","GBP","HKD","IDR","ILS","INR","JPY","MXN","NOK","NZD","PLN","RON","RUB","SEK","SGD","USD","ZAR"]
     let currencySymbolsArray = ["$", "R$", "$", "¥", "€", "£", "$", "Rp", "₪", "₹", "¥", "$", "kr", "$", "zł", "lei", "₽", "kr", "$", "$", "R"]
     var finalURL = ""
+    let currencyModel = CurrencyModel()
 
     //Pre-setup IBOutlets
     @IBOutlet weak var bitcoinPriceLabel: UILabel!
@@ -52,6 +53,10 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         getTickerData(url: finalURL)
     }
     
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+        let attributedString = NSAttributedString(string: currencyArray[row], attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
+        return attributedString
+    }
     
     
     //MARK: - Networking
@@ -87,8 +92,9 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         
         if let tickerResult = json["ask"].double {
             print(tickerResult)
-            print(currencyPicker.selectedRow(inComponent: 0))
-            bitcoinPriceLabel.text = currencySymbolsArray[currencyPicker.selectedRow(inComponent: 0)] + " " + String(tickerResult)
+            currencyModel.symbol = currencySymbolsArray[currencyPicker.selectedRow(inComponent: 0)]
+            currencyModel.result = tickerResult
+            bitcoinPriceLabel.text = currencyModel.ticker
         } else {
             bitcoinPriceLabel.text = "Rate not available"
         }
